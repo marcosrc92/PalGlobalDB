@@ -1,4 +1,7 @@
 require("dotenv").config({ override: true });
+const pasivasList = require("./pasivas.js");
+const tiposList = require("./tipos.js");
+const rolesList = require("./roles.js");
 const { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder, Events } = require("discord.js");
 
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -35,48 +38,80 @@ const commands = [
       option.setName("nombre")
         .setDescription("Nombre del Pal")
         .setRequired(true))
+
+    .addStringOption(option =>
+      option.setName("genero")
+        .setDescription("Género del Pal")
+        .setRequired(true)
+        .addChoices(
+          { name: "Masculino", value: "Masculino" },
+          { name: "Femenino", value: "Femenino" }
+        ))
+
     .addStringOption(option =>
       option.setName("tipo1")
         .setDescription("Tipo principal")
-        .setRequired(true))
+        .setRequired(true)
+        .addChoices(...tiposList))
+
     .addIntegerOption(option =>
       option.setName("iv_vida")
         .setDescription("IV Vida")
-        .setRequired(true))
+        .setRequired(true)
+        .setMinValue(0)
+        .setMaxValue(100))
+
     .addIntegerOption(option =>
       option.setName("iv_atk")
         .setDescription("IV Ataque")
-        .setRequired(true))
+        .setRequired(true)
+        .setMinValue(0)
+        .setMaxValue(100))
+
     .addIntegerOption(option =>
       option.setName("iv_def")
         .setDescription("IV Defensa")
-        .setRequired(true))
+        .setRequired(true)
+        .setMinValue(0)
+        .setMaxValue(100))
+
     .addStringOption(option =>
       option.setName("rol")
         .setDescription("Rol del Pal")
-        .setRequired(true))
+        .setRequired(true)
+        .addChoices(...rolesList))
 
     // Parámetros opcionales
     .addStringOption(option =>
       option.setName("tipo2")
         .setDescription("Tipo secundario (opcional)")
-        .setRequired(false))
+        .setRequired(false)
+        .addChoices(...tiposList))
+
     .addStringOption(option =>
       option.setName("pasiva1")
         .setDescription("Pasiva 1 (opcional)")
-        .setRequired(false))
+        .setRequired(false)
+        //.addChoices(...pasivasList)
+        )
     .addStringOption(option =>
       option.setName("pasiva2")
         .setDescription("Pasiva 2 (opcional)")
-        .setRequired(false))
+        .setRequired(false)
+        //.addChoices(...pasivasList)
+        )
     .addStringOption(option =>
       option.setName("pasiva3")
         .setDescription("Pasiva 3 (opcional)")
-        .setRequired(false))
+        .setRequired(false)
+        //.addChoices(...pasivasList)
+        )
     .addStringOption(option =>
       option.setName("pasiva4")
         .setDescription("Pasiva 4 (opcional)")
-        .setRequired(false))
+        .setRequired(false)
+        //.addChoices(...pasivasList)
+        )
 ].map(command => command.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
@@ -100,6 +135,7 @@ client.on(Events.InteractionCreate, async interaction => {
     await interaction.deferReply({ ephemeral: true }); // Avisa a Discord que estamos procesando
 
     const nombre = interaction.options.getString("nombre");
+    const genero = interaction.options.getString("genero");
     const tipo1 = interaction.options.getString("tipo1");
     const tipo2 = interaction.options.getString("tipo2");
     const iv_vida = interaction.options.getInteger("iv_vida");
@@ -113,10 +149,11 @@ client.on(Events.InteractionCreate, async interaction => {
       interaction.options.getString("pasiva4")
     ].filter(p => p);
 
-    let descripcion = `🐾 **Nombre:** ${nombre}\n`;
-    descripcion += `🌈 **Tipo(s):** ${tipo1}` + (tipo2 ? ` / ${tipo2}` : "") + `\n`;
-    descripcion += `📊 **IVs:** ❤️ ${iv_vida} | 🗡 ${iv_atk} | 🛡 ${iv_def}\n`;
-    descripcion += `🏷 **Rol:** ${rol}\n`;
+    let descripcion = `**Nombre:** ${nombre}\n`;
+    descripcion += `**Genero:** ${genero}\n`;
+    descripcion += `**Tipo(s):** ${tipo1}` + (tipo2 ? ` / ${tipo2}` : "") + `\n`;
+    descripcion += `**IVs:** ❤️ ${iv_vida} | 🗡 ${iv_atk} | 🛡 ${iv_def}\n`;
+    descripcion += ` **Rol:** ${rol}\n`;
     if (pasivas.length > 0) {
       descripcion += `✨ **Pasivas:**\n`;
       pasivas.forEach(p => {
