@@ -129,7 +129,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
       await hilo.send(descripcion);
 
-      await interaction.reply({ content: "✅ Pal agregado al hilo!", ephemeral: true });
+      //await interaction.reply({ content: "✅ Pal agregado al hilo!", ephemeral: true });
     } catch (error) {
       console.error(error);
       await interaction.reply({ content: "❌ Error al enviar el Pal al hilo.", ephemeral: true });
