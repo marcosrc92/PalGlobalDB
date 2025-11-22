@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ override: true });
 const { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder, Events } = require("discord.js");
 
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -16,7 +16,7 @@ const client = new Client({
   ]
 });
 
-client.once("clientready", () => {
+client.once("clientReady", () => {
   console.log(`Bot online as ${client.user.tag}`);
 });
 
@@ -124,15 +124,14 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 
     try {
-      // ID del hilo donde quieres enviar el mensaje
       const hilo = await client.channels.fetch(process.env.THREAD_ID);
-
       await hilo.send(descripcion);
-
       //await interaction.reply({ content: "✅ Pal agregado al hilo!", ephemeral: true });
     } catch (error) {
       console.error(error);
-      await interaction.reply({ content: "❌ Error al enviar el Pal al hilo.", ephemeral: true });
+      if (!interaction.replied) {
+        await interaction.reply({ content: "❌ Error al enviar el Pal al hilo.", ephemeral: true });
+      }
     }
   }
 });
