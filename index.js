@@ -97,6 +97,8 @@ client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === "crear_pal") {
+    await interaction.deferReply({ ephemeral: true }); // Avisa a Discord que estamos procesando
+
     const nombre = interaction.options.getString("nombre");
     const tipo1 = interaction.options.getString("tipo1");
     const tipo2 = interaction.options.getString("tipo2");
@@ -111,7 +113,6 @@ client.on(Events.InteractionCreate, async interaction => {
       interaction.options.getString("pasiva4")
     ].filter(p => p);
 
-    // Construimos el mensaje
     let descripcion = `🐾 **Nombre:** ${nombre}\n`;
     descripcion += `🌈 **Tipo(s):** ${tipo1}` + (tipo2 ? ` / ${tipo2}` : "") + `\n`;
     descripcion += `📊 **IVs:** ❤️ ${iv_vida} | 🗡 ${iv_atk} | 🛡 ${iv_def}\n`;
@@ -126,12 +127,11 @@ client.on(Events.InteractionCreate, async interaction => {
     try {
       const hilo = await client.channels.fetch(process.env.THREAD_ID);
       await hilo.send(descripcion);
-      //await interaction.reply({ content: "✅ Pal agregado al hilo!", ephemeral: true });
+
+      //await interaction.editReply({ content: "✅ Pal agregado al hilo!" }); // Responde ya
     } catch (error) {
       console.error(error);
-      if (!interaction.replied) {
-        await interaction.reply({ content: "❌ Error al enviar el Pal al hilo.", ephemeral: true });
-      }
+      await interaction.editReply({ content: "❌ Error al enviar el Pal al hilo." });
     }
   }
 });
